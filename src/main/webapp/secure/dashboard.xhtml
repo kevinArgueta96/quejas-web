@@ -1,0 +1,244 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:b="http://bootsfaces.net/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/templates/layout/secure/template.xhtml">
+    <ui:define name="title">Diaco</ui:define>
+
+    <style type="text/css">
+    </style>
+    <ui:define id="inicio" name="content">
+         <script src="../resources/js/VerificaSesion.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function () {
+
+                var escalas, datos;
+                function recuperarJsons(respuestaE, respuestaD) {
+                    escalas = respuestaE;
+                    datos = respuestaD;
+                    jd =#{DashboardUI.deptoJson};
+                    console.log(jd);
+                }
+
+                $.when(
+                        $.ajax({
+                            url: "../resources/mapa/escalas.json",
+                            dataType: 'json',
+                            type: 'GET'}),
+                        $.ajax({
+                            url: "../resources/mapa/datos.json",
+                            dataType: 'json',
+                            type: 'GET'}),
+                        $.ajax({
+                            url: "../resources/mapa/limites_municipales_codigos.svg",
+                            dataType: 'html',
+                            type: 'GET'})
+                        )
+                        .done(function (escalas, datos, mapa) {
+                            recuperarJsons(escalas[0], datos[0]);
+                            $(".mapa").html(mapa[0]);
+                            rellenarMapa();
+                            generarLeyenda();
+                        });
+
+                function rellenarMapa() {
+                    for (var k in datos) {
+                        $('#dep' + k).css({'fill': '' + escalas[datos[k]].color + ''}).data('area', [k, datos[k]]);
+                    }
+                    $('.depa').mouseover(function (e) {
+                        var datos_departamento = $(this).data('area');
+                        if (datos_departamento !== undefined) {
+                            $('<div class="panel_info">' + jd['Depto'][(datos_departamento[0])]['nombre'] +
+                                    '<br/>' + 'Total Atendidos:' + jd['Depto'][datos_departamento[0]]['total'] + '</div>')
+                                    .appendTo('body');
+                        }
+                    }).mouseleave(function () {
+                        $('.panel_info').remove();
+                    }).mousemove(function (e) {
+                        var mouseX = e.pageX, mouseY = e.pageY;
+                        $('.panel_info').css({
+                            top: mouseY - 50,
+                            left: mouseX - ($('.panel_info').width() / 2)
+                        });
+                    });
+                }
+                function generarLeyenda() {
+                    var regi = $("#region").find('tbody');
+                    for (var k in escalas) {
+                        var fila = regi.append(('<tr></tr>'));
+                        fila.append($('<td></td>').text(escalas[k]["nombre"]));
+                        fila.append($('<td class="color"></td>').css({
+                            'background-color': '' + escalas[k]["color"] + ''}));
+                    }
+                }
+            });
+        </script>
+        <style>
+
+            .depa {
+                cursor: help;
+            }
+
+            .panel_info {
+                background-color: rgba(255,255,255, .8);
+                padding: 5px;
+                font-size: 12px;
+                font-family: Helvetica, Arial, sans-serif;
+                position: absolute;
+                border: 1px solid #333;
+                color: #333;
+                white-space: nowrap;
+            }
+
+            .panel_info::first-line {
+                font-weight: bold;
+            }
+            .panel_info
+
+            svg {
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .center{
+                margin-left:auto; 
+                margin-right:auto;
+                width: 10%
+
+            }
+            #region .color {
+                width: 100px;
+                border: solid 1px black
+            }
+            #años{
+                width: 15%;
+            }
+        </style>
+        <div class="card">
+            <p:outputPanel id="pnlPrincipal">
+                <p:tabView id="viewTotales">
+                    <p:tab title="Totales Departamental">
+                        <div class="card">
+                            <div class="ui-g" style="margin: 20px">
+                                <div class="ui-g-12 ui-md-12 ui-lg-6">
+                                    <div class="card">
+                                        <p:dataTable 
+                                            id="dtDeptoLista" 
+                                            var="solicitud" 
+                                            value="#{DashboardUI.listaTotales}"                                              
+                                            style="margin-bottom:20px"
+                                            emptyMessage="No hay solicitudes registradas"
+                                            reflow="true"
+                                            rows="22"
+                                            paginator="true"
+                                            paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                                            rowsPerPageTemplate="5,10,15"
+                                            selectionMode="single"
+                                            rowKey="#{solicitud.idDepto}"
+                                            widgetVar="dtDeptoListaTable"
+                                            paginatorPosition="top"
+                                            >   
+                                            <!-- Herramientas -->
+
+                                            <!-- Herramientas -->
+                                            <f:facet name="paginatorTopRight">
+                                                <h:commandLink>
+                                                    <p:graphicImage id="linkExcel"
+                                                                    name="images/page_excel.png" 
+                                                                    library="apollo-layout"
+                                                                    style="width: 16px;height: 16px;"/>
+                                                    <p:dataExporter  type="xls" target="dtDeptoLista" fileName="lista-datos-deptoZ" />
+                                                </h:commandLink>
+                                            </f:facet>
+
+
+                                            <p:column headerText="Departamento" filterBy="#{solicitud.nombreDepto}">
+                                                <p:outputLabel value="#{solicitud.nombreDepto}"/>
+                                            </p:column>
+                                            <p:column headerText="Total Quejas Departamental" sortBy="#{solicitud.total}">
+                                                <p:outputLabel value="#{solicitud.total}"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                </div>
+                                <div class="ui-g-12 ui-md-12 ui-lg-6">
+
+                                    <div class="card">
+                                        <div class="center" style="text-align: right">
+                                            <h:outputText value="MAPA DE GUATEMALA"
+                                                          style="font-size: 20px;color: #39a3f4;"
+                                                          >
+                                            </h:outputText>
+                                        </div>
+                                        <div class="mapa"></div>
+                                        <div class="center">
+                                            <table id="region">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">Regiones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody> 
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </p:tab>
+                    <p:tab title="Totales Quejas">
+                        <h:panelGroup id="Ptotales"
+                                      styleClass="ui-panelgrid-blank grid-pad">
+                            <p:dataTable 
+                                id="dtTotales"
+                                var="totales"
+                                value="#{DashboardUI.listaTotales}"
+                                rowKey="#{totales.idDepto}"
+                                emptyMessage="No hay datos que mostrar"
+                                widgetVar="dtTotalesTable"
+                                scrollable="true"
+                                paginatorPosition="top"
+                                reflow="true"
+                                rows="22"
+                                paginator="true"
+                                >
+                                <f:facet name="header">
+                                    Datos totales de quejas Ingresados
+                                </f:facet>
+                                <p:column headerText="Departamentos">
+                                    <h:outputText value="#{totales.nombreDepto}"/>
+                                </p:column>
+                                <p:column headerText="Totales">
+                                    <h:outputText value="#{totales.total}"/>
+                                </p:column>
+                                <p:column headerText="Masculinos">
+                                    <h:outputText value="#{totales.totMas}"/>
+                                </p:column>
+                                <p:column headerText="Femeninos">
+                                    <h:outputText value="#{totales.totFem}"/>
+                                </p:column>
+                                <p:column headerText="Nacionales">
+                                    <h:outputText value="#{totales.totNac}"/>
+                                </p:column>
+                                <p:column headerText="Extranjero">
+                                    <h:outputText value="#{totales.totExt}"/>
+                                </p:column>
+                                <p:column headerText="Individual">
+                                    <h:outputText value="#{totales.totJInd}"/>
+                                </p:column>
+                                <p:column headerText="Juridico">
+                                    <h:outputText value="#{totales.totJur}"/>
+                                </p:column>
+                            </p:dataTable>   
+                        </h:panelGroup> 
+                    </p:tab>
+                </p:tabView>
+
+            </p:outputPanel>
+        </div>
+
+    </ui:define>
+</ui:composition>

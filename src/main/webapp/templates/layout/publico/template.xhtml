@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      lang="en">
+    <style type="text/css">
+        /*.top-layout{
+            position: absolute;
+            width: 100%;
+            height: 18em;
+            background-color: #42515a;*//*#42515a -> otro tono*/
+           /* background-image: -webkit-gradient(linear, left top, right top, from(#1E88E5), to(#1E88E5));
+            background-image: -webkit-linear-gradient(left, #1E88E5, #1E88E5);
+            background-image: -moz-linear-gradient(left, #1E88E5, #1E88E5);
+            background-image: -ms-linear-gradient(left, #1E88E5, #1E88E5);
+            background-image: -o-linear-gradient(left, #1E88E5, #1E88E5);
+            background-image: linear-gradient(left, #1E88E5, #1E88E5);
+            z-index:-1;
+            opacity: 0.8;
+            }*/
+        </style>
+        <h:head>
+            <f:facet name="first">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+                <meta name="apple-mobile-web-app-capable" content="yes" />
+            </f:facet>
+            <title><ui:insert name="title">PrimeFaces</ui:insert></title>
+            <h:outputScript name="js/nanoscroller.js" library="sapphire-layout" />
+            <h:outputScript name="js/layout.js" library="sapphire-layout" />
+            <h:outputScript name="js/ripple.js" library="sapphire-layout" />
+            <link rel="icon" href="${request.contextPath}/favicon.ico" type="image/x-icon"/>
+            <link rel="shortcut icon" href="${request.contextPath}/favicon.ico" type="image/x-icon"/>
+            <ui:insert name="head"/>
+        </h:head>
+
+        <h:body>
+            <!--<div class="top-layout"></div>-->
+            <div class="layout-container layout-menu-light layout-topbar-blue layout-menu-horizontal">
+                <div class="layout-top">
+                    <ui:include src="./topbar.xhtml" />
+                </div>
+                <div class="layout-content">
+                    <h:form id="pnlContenedor">
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                        <ui:insert name="content"/>
+                    </h:form>
+                </div>
+
+                <div class="layout-mask"></div>
+
+                <ui:include src="./footer.xhtml" />
+            </div>
+
+            <p:ajaxStatus style="width:32px;height:32px;position:fixed;right:7px;bottom:7px">
+                <f:facet name="start">
+                    <i class="fa fa-circle-o-notch fa-spin ajax-loader" aria-hidden="true"></i>
+                </f:facet>
+
+                <f:facet name="complete">
+                    <h:outputText value="" />
+                </f:facet>
+            </p:ajaxStatus>
+
+            <h:outputStylesheet name="css/nanoscroller.css" library="sapphire-layout" />
+            <h:outputStylesheet name="css/ripple.css" library="sapphire-layout" />
+            <h:outputStylesheet name="css/grid.css" library="sapphire-layout" />
+            <h:outputStylesheet name="css/layout-blue.css" library="sapphire-layout" />
+            <h:outputStylesheet name="css/primeflex.css" library="primeflex"/>
+            <h:outputStylesheet name="themes/saga-blue.css" library="primeflex" />
+            <!-- **************** -->
+            <script>
+                PrimeFaces.locales['es'] = {
+                    closeText: 'Cerrar',
+                    prevText: 'Anterior',
+                    nextText: 'Siguiente',
+                    monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                    monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                    dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                    dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+                    dayNamesMin: ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
+                    weekHeader: 'Semana',
+                    firstDay: 1,
+                    isRTL: false,
+                    showMonthAfterYear: false,
+                    yearSuffix: '',
+                    timeOnlyTitle: 'Sólo hora',
+                    timeText: 'Tiempo',
+                    hourText: 'Hora',
+                    minuteText: 'Minuto',
+                    secondText: 'Segundo',
+                    currentText: 'Fecha actual',
+                    ampm: false,
+                    month: 'Mes',
+                    week: 'Semana',
+                    day: 'Día',
+                    allDayText: 'Todo el día'
+                };
+            </script>
+        </h:body>
+
+    </html>

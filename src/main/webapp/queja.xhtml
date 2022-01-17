@@ -1,0 +1,466 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:b="http://bootsfaces.net/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/templates/layout/publico/template.xhtml">
+    <ui:define name="title">Diaco</ui:define>
+    <script type="text/javascript">
+        PrimeFaces.locales['es'] = {
+            closeText: 'Cerrar',
+            prevText: 'Anterior',
+            nextText: 'Siguiente',
+            monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+            monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+            dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+            dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+            dayNamesMin: ['D', 'L', 'M', 'X', 'J', 'V', 'S'],
+            weekHeader: 'Semana',
+            firstDay: 1,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: '',
+            timeOnlyTitle: 'Sólo hora',
+            timeText: 'Tiempo',
+            hourText: 'Hora',
+            minuteText: 'Minuto',
+            secondText: 'Segundo',
+            currentText: 'Fecha actual',
+            ampm: false,
+            month: 'Mes',
+            week: 'Semana',
+            day: 'Día',
+            allDayText: 'Todo el día',
+            today: 'Hoy',
+            clear: 'Claro'
+        };
+    </script>
+    <style type="text/css">
+    </style>
+    <ui:define id="inicio" name="content">
+        <div class="card">
+            <p:outputPanel id="pnlPrincipal">
+                <div class="card hidden-xs-down">
+                    <div class="card-title">Ingreso queja DIACO</div>
+                    <p:steps id="steps" activeIndex="#{FormularioUI.panel}" styleClass="custom" >
+                        <p:menuitem value="Verificación"/>
+                        <p:menuitem value="Ingreso Queja"/>
+                        <p:menuitem value="Envío"/>
+                    </p:steps>
+                </div>
+                <h:panelGroup id="pnlReCaptcha" rendered="#{FormularioUI.panel == 0}" 
+                              styleClass="ui-panelgrid-blank grid-pad"> 
+                    <div class="surface-card p-4 shadow-2 border-round" style="height: ">
+                        <div class="text-3xl font-medium text-900 mb-3">Aceptación De Captcha</div>
+                        <div class="font-medium text-500 mb-3">Para ingresar su queja, deberá aceptar el ReCaptcha para continuar</div>
+                        <div style="height: 100%" class="border-2 border-dashed surface-border">
+                            <div class="ui-g">
+                                <div class="ui-xl-5 ui-lg-5 ui-g-3 ui-md-3 ui-sm-12"></div>
+                                <div class="ui-xl-7 ui-lg-7 ui-g-9 ui-md-9 ui-sm-12">
+                                    <div class="ui-lg-12 ui-g-12 ui-md-12 ui-sm-12">
+                                        <p:panelGrid  columns="1" layout="grid" styleClass="ui-panelgrid-blank" >
+                                            <p:messages showDetail="true"/>
+                                            <p:captcha label="Captcha" language="es"/>
+                                        </p:panelGrid>
+                                    </div>
+                                </div>
+
+                                <div class="ui-xl-5 ui-lg-5 ui-g-3 ui-md-3 ui-sm-12"></div>
+                                <div class="ui-xl-7 ui-lg-7 ui-g-9 ui-md-9 ui-sm-12">
+                                    <div class="ui-lg-3 ui-g-4 ui-md-5 ui-sm-12">
+                                        <p:commandButton 
+                                            id="btnCaptcha" value="Confirmar"
+                                            icon="fa fa-chevron-right fw" iconPos="right"
+                                            update="pnlContenedor:pnlPrincipal"
+                                            actionListener="#{FormularioUI.validarCaptcha()}"
+                                            ajax="true"
+                                            >
+                                        </p:commandButton>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+                <h:panelGroup id="pQueja" rendered="#{FormularioUI.panel == 1}" 
+                              styleClass="ui-panelgrid-blank grid-pad">
+
+                    <div class="surface-card p-4 shadow-2 border-round" style="height: ">
+                        <div class="text-3xl font-medium text-900 mb-3">Llene los campos solicitados</div>
+                        <div class="font-medium text-500 mb-3">Detalles del consumidor</div>
+                        <div style="height: 100%;padding: 20px" class="border-2 border-dashed surface-border">
+                            <div class="ui-fluid p-formgrid p-grid">
+                                <div class="p-field p-col-12 p-md-6">
+
+                                    <label><b>Consumidor</b></label><i style="color:#e62a10">*</i>
+                                    <p:selectOneMenu id="Tcosumidor"
+                                                      value="#{FormularioUI.consumidor}"
+                                                      required="true">
+                                        
+                                        <f:selectItem itemLabel="Seleccione " itemValue=""/>
+                                        <f:selectItem itemLabel="Individual" itemValue="Individual"/>
+                                        <f:selectItem itemLabel="Juridico" itemValue="Juridico"/>
+                                    </p:selectOneMenu>
+                                    <p:tooltip  for="Tcosumidor" position="bottom"/>
+                                    <div>
+                                        <p:message id="msgErrorConsu" for="Tcosumidor"/>
+                                    </div>
+                                </div>
+                                <div class="p-field p-col-12 p-md-6">
+                                    <label><b>Genero</b></label><i style="color:#e62a10">*</i>
+                                    <p:selectOneMenu id="Tgenero"
+                                                     value="#{FormularioUI.genero}"
+                                                      required="true">
+                                        <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                        <f:selectItem itemLabel="Masculino" itemValue="Masculino"/>
+                                        <f:selectItem itemLabel="Femenino" itemValue="Femenino"/>
+                                    </p:selectOneMenu>
+                                    <p:tooltip  for="Tgenero" position="bottom"/>
+                                    <div>
+                                        <p:message id="msgErrorGenero" for="Tgenero"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui-fluid p-formgrid p-grid">
+                                <div class="p-field p-col-12 p-md-12">
+                                    <label><b>Nacionalidad</b></label><i style="color:#e62a10">*</i>
+                                     <p:selectOneMenu id="TNacionalidad"
+                                                      value="#{FormularioUI.nacionalidad}"
+                                                      required="true">
+                                        <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                        <f:selectItem itemLabel="Nacional" itemValue="Nacional"/>
+                                        <f:selectItem itemLabel="Extranjero" itemValue="Extranjero"/>
+                                    </p:selectOneMenu>
+                                    <p:tooltip  for="TNacionalidad" position="bottom"/>
+                                    <div>
+                                        <p:message id="msgErrorNacio" for="TNacionalidad"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui-fluid p-formgrid p-grid">
+                                <div class="p-field p-col-12 p-md-6">
+
+                                    <label><b>Departamento</b></label><i style="color:#e62a10">*</i>
+                                    <p:selectOneMenu id="TeDepto"
+                                                     value="#{FormularioUI.iddeptoC}"
+                                                     validator="#{FormularioUI.validarDepartamento}"
+                                                     required="true">
+                                        <p:ajax update="TeMun" immediate="true"/>
+                                        <f:selectItem itemLabel="Seleccione" noSelectionOption="true" />          
+                                        <f:selectItems value="#{FormularioUI.listaD}" />
+                                    </p:selectOneMenu>
+                                    <p:tooltip  for="TeDepto" position="bottom"/>
+                                    <div>
+                                        <p:message id="msgErrorTdepto" for="TeDepto"/>
+                                    </div>
+                                </div>
+                                <div class="p-field p-col-12 p-md-6">
+                                    <label><b>Municipio</b></label><i style="color:#e62a10">*</i>
+                                    <p:selectOneMenu id="TeMun"
+                                                     value="#{FormularioUI.idmunC}"
+                                                     required="true">
+                                        <f:selectItem itemLabel="Seleccione" noSelectionOption="true" />          
+                                        <f:selectItems value="#{FormularioUI.listaMun}" />
+                                    </p:selectOneMenu>
+                                    <p:tooltip  for="TeMun" position="bottom"/>
+                                    <div>
+                                        <p:message id="msgErrorTmun" for="TeMun"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui-fluid p-formgrid p-grid">
+                                <div class="p-field p-col-12 p-md-12">
+                                    <label><b>Sede cercana</b></label><i style="color:#e62a10">*</i>
+                                    <p:selectOneMenu id="Tsede"
+                                                     value="#{FormularioUI.idSede}"
+                                                     validator="#{FormularioUI.ValidarSede}"
+                                                     required="true">
+                                        <f:selectItem itemLabel="Seleccione" noSelectionOption="true" />          
+                                        <f:selectItems value="#{FormularioUI.listaSede}" />
+                                    </p:selectOneMenu>
+                                    <p:tooltip  for="Tsede" position="bottom"/>
+                                    <div>
+                                        <p:message id="msgErrorSede" for="Tsede"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <br/>
+
+                        <div class="font-medium text-500 mb-3">Datos del Negocio</div>
+                        <div style="height: 100%;padding: 20px" class="border-2 border-dashed surface-border">
+                            <div class="formgrid grid">
+                                <div class="field col">
+                                    <label><b> Nombre del negocio</b></label><i style="color:#e62a10">*</i>
+                                    <p:inputText id="Tnego" required="true" 
+                                                 requiredMessage="Campo requerido"
+                                                 maxlength="150" placeholder="Ingrese el nombre del negocio"
+                                                 title="Nombre Negocio."
+                                                 value="#{FormularioUI.nombreNegocio}"
+                                                 style="width: 100%"/>
+                                    <p:tooltip  for="Tnego" position="bottom"/>
+                                    <div>
+                                        <p:message id="msgErrorNegocio" for="Tnego"/>
+                                    </div>
+                                </div>
+                                <div class="field col">
+                                    <label><b>Nit del Negocio</b></label>
+                                    <p:inputText id="Tnit" required="true" 
+                                                 requiredMessage="Campo requerido"
+                                                 maxlength="150" placeholder="Ingrese NIT del negocio"
+                                                 title="NIT negocio."
+                                                 value="#{FormularioUI.nitNegocio}"
+                                                 style="width: 100%"/>
+                                    <p:tooltip  for="Tnit" position="bottom"/>
+                                    <div>
+                                        <p:message id="msgErrorNit" for="Tnit"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="formgrid grid">
+                                <div class="field col">
+                                    <label><b>Dirección</b></label><i style="color:#e62a10">*</i>
+                                    <p:inputTextarea id="Tdireccion" required="true" 
+                                                     requiredMessage="Campo requerido"
+                                                     maxlength="150" placeholder="Ingrese la dirección"
+                                                     title="Direccion."
+                                                     value="#{FormularioUI.direecionNego}"
+                                                     style="width: 100%"/>
+                                    <p:tooltip  for="Tdireccion" position="bottom"/>
+                                    <div>
+                                        <p:message id="msgErrorRazon" for="Tdireccion"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui-fluid p-formgrid p-grid">
+                                <div class="p-field p-col-12 p-md-6">
+
+                                    <label><b>Departamento</b></label><i style="color:#e62a10">*</i>
+                                  <p:selectOneMenu id="TNDepto"
+                                                   value="#{FormularioUI.iddeptoQ}"
+                                                     validator="#{FormularioUI.validarDepartamentoN}"
+                                                     required="true">
+                                        <p:ajax update="TNMun" immediate="true"/>
+                                        <f:selectItem itemLabel="Seleccione" noSelectionOption="true" />          
+                                        <f:selectItems value="#{FormularioUI.listaDN}" />
+                                    </p:selectOneMenu>
+                                    <p:tooltip  for="TNDepto" position="bottom"/>
+                                    <div>
+                                        <p:message id="msgErrorDep" for="TNDepto"/>
+                                    </div>
+                                </div>
+                                <div class="p-field p-col-12 p-md-6">
+                                    <label><b>Municipio</b></label><i style="color:#e62a10">*</i>
+                                   <p:selectOneMenu id="TNMun"
+                                                    value="#{FormularioUI.idmunQ}"
+                                                    required="true">
+                                        <f:selectItem itemLabel="Seleccione" noSelectionOption="true" />          
+                                        <f:selectItems value="#{FormularioUI.listaMunN}" />
+                                    </p:selectOneMenu>
+                                    <p:tooltip  for="TNMun" position="bottom"/>
+                                    <div>
+                                        <p:message id="msgErrorMun" for="TNMun"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="formgrid grid">
+                                <div class="field col">
+                                    <label><b>Télefono</b></label><i style="color:#e62a10">*</i>
+                                    <p:inputMask id="Ttelefono" required="true" 
+                                                 requiredMessage="Campo requerido"
+                                                 maxlength="12" placeholder="Ingrese el télefono"
+                                                mask="99999999"
+                                                 title="Télefono."
+                                                 value="#{FormularioUI.telefono}"
+                                                 style="width: 100%"/>
+                                    <p:tooltip  for="Ttelefono" position="bottom"/>
+                                    <div>
+                                        <p:message id="msgErrorTele" for="Ttelefono"/>
+                                    </div>
+                                </div>
+                                <div class="field col">
+                                    <label><b>Correo</b></label><i style="color:#e62a10">*</i>
+                                    <p:inputText id="Tcorreo" required="true" 
+                                                 requiredMessage="Campo requerido"
+                                                 maxlength="150" placeholder="Ingrese el correo"
+                                                 title="Correo."
+                                                 value="#{FormularioUI.correo}"
+                                                 style="width: 100%"/>
+                                    <p:tooltip  for="Tcorreo" position="bottom"/>
+                                    <div>
+                                        <p:message id="msgErrorCorreo" for="Tcorreo"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--<div class="ui-g">
+                                <div class="ui-lg-6 ui-md-12">
+                                    <p:outputLabel value="Nombre de Negocio: " style="font-size:20px;font-weight: bold"/>
+                                    <i style="color:#e62a10">*</i>
+                                </div>
+                                <div class="ui-lg-6 ui-md-12">
+                                    <p:inputText id="txtNombreNegocio" required="true" 
+                                                 requiredMessage="Campo requerido"
+                                                 maxlength="150" placeholder="Ingrese el nombre del negocio"
+                                                 title="Nombre Negocio."
+                                                 value="#{FormularioUI.nombreNegocio}"
+                                                 style="width: 100%"/>
+                                    <p:tooltip  for="txtNombreNegocio" position="bottom"/>
+                                    <div>
+                                        <p:message id="msgErrorNombre" for="txtNombreNegocio"/>
+                                    </div>
+                                </div>
+                                <div class="ui-lg-6 ui-md-12 ui-sm-12">
+                                    <p:outputLabel value="Ingrese su queja" style="font-size:20px;font-weight: bold"/>
+                                    <i style="color:#e62a10">*</i>
+                                </div>
+                                <div class="ui-lg-6 ui-md-12 ui-sm-12">
+                                    <p:inputTextarea id="txtQueja" required="true" 
+                                                     requiredMessage="Campo requerido"
+                                                     maxlength="150" placeholder="Ingrese el nombre del negocio"
+                                                     title="Queja"
+                                                     value="#{FormularioUI.queja}"
+                                                     style="width: 100%"/>
+                                    <p:tooltip  for="txtQueja" position="bottom"/>
+                                    <div>
+                                        <p:message id="msgErrorQueja" for="txtQueja"/>
+                                    </div>
+                                </div>
+                                <div class="ui-lg-6 ui-md-12">
+                                    <p:outputLabel value="Número de Factura: " style="font-size:20px;font-weight: bold"/>
+                                    <i style="color:#e62a10">*</i>
+                                </div>
+                                <div class="ui-lg-6 ui-md-12">
+                                    <p:inputText id="txtFactura" required="true" 
+                                                 requiredMessage="Campo requerido"
+                                                 maxlength="150" placeholder="Factura"
+                                                 title="Factura"
+                                                 value="#{FormularioUI.factura}"
+                                                 style="width: 100%"/>
+                                    <p:tooltip  for="txtFactura" position="bottom"/>
+                                </div>
+
+                            </div>-->
+                        </div>
+
+                        <br/>
+                        <br/>
+                        <div class="font-medium text-500 mb-3">Detalle de la queja</div>
+                        <div style="height: 100%;padding: 20px;" class="border-2 border-dashed surface-border">
+                            <div class="ui-fluid p-formgrid p-grid">
+                                <div class="p-field p-col-12 p-md-6">
+                                    <label><b>No. Factura</b></label><i style="color:#e62a10">*</i>
+                                    <p:inputText id="Tfactura" required="true" 
+                                                 requiredMessage="Campo requerido"
+                                                 maxlength="150" placeholder="Ingrese el numero de factura"
+                                                 title="Factura."
+                                                 value="#{FormularioUI.noFactura}"
+                                                 style="width: 100%"/>
+                                    <p:tooltip  for="Tfactura" position="bottom"/>
+                                    <div>
+                                        <p:message id="msgErrorFact" for="Tfactura"/>
+                                    </div>
+                                </div>
+                                <div class="p-field p-col-12 p-md-6">
+                                    <label><b>Fecha del documento</b></label><i style="color:#e62a10">*</i>
+                                    <p:calendar id="button" value="#{FormularioUI.fechaQueja}" 
+                                                  locale="es"
+                                                pattern="dd/MM/yyyy" />
+                                </div>
+
+                            </div>
+                            <div class="formgrid grid">
+                                <div class="field col">
+                                    <label><b>Detalle de la queja</b></label><i style="color:#e62a10">*</i>
+                                    <p:inputTextarea id="Tqueja" required="true" 
+                                                     requiredMessage="Campo requerido"
+                                                     maxlength="150" placeholder="Ingrese la queja"
+                                                     title="Detalle de la queja"
+                                                     value="#{FormularioUI.queja}"
+                                                     style="width: 100%"/>
+                                    <p:tooltip  for="Tqueja" position="bottom"/>
+                                    <div>
+                                        <p:message id="msgErrorQueja" for="Tqueja"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="formgrid grid">
+                                <div class="field col">
+                                    <label><b>Solicitud de queja</b></label><i style="color:#e62a10">*</i>
+                                    <p:inputTextarea id="Tsolicitud" required="true" 
+                                                     requiredMessage="Campo requerido"
+                                                     maxlength="150" placeholder="Ingrese su solcitud"
+                                                     title="Detalle de la solicitud"
+                                                     value="#{FormularioUI.solicitudQueja}"
+                                                     style="width: 100%"/>
+                                    <p:tooltip  for="Tqueja" position="bottom"/>
+                                    <div>
+                                        <p:message id="msgErrorSoli" for="Tsolicitud"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ui-g">
+                            <div class="ui-xl-5 ui-lg-5 ui-g-3 ui-md-3 ui-sm-12"></div>
+                            <div class="ui-xl-7 ui-lg-7 ui-g-9 ui-md-9 ui-sm-12">
+                                <div class="ui-lg-3 ui-g-4 ui-md-5 ui-sm-12">
+                                    <p:commandButton 
+                                        title="ENVIAR"
+                                        value="Enviar"
+                                        update="pnlContenedor:pnlPrincipal"
+                                        styleClass="primary-btn"
+                                        actionListener="#{FormularioUI.envioSolicitud()}"
+                                        onkeypress="if (event.key === 'Enter') {
+
+                                                    return false;
+                                                }"
+                                        >
+                                    </p:commandButton>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+                <h:panelGroup id="pEnvio" rendered="#{FormularioUI.panel == 2}" >
+                    <div class="grid grid-nogutter surface-section text-800">
+                        <div class="col-12 md:col-6 p-6 text-center md:text-left flex align-items-center ">
+                            <section>
+                                <span class="block text-6xl font-bold mb-1">Su queja a sido enviada</span>
+                                <div class="text-6xl text-primary font-bold mb-3"
+                                     >Gracias por ingresar la información</div>
+                                <p class="mt-0 mb-4 text-700 line-height-3">Seleccione finalizar para continuar</p>
+
+                                <div class="btn-final">
+                                    <p:button
+                                        icon="fa fa-chevron-left fw" 
+                                        title="FINALIZAR"
+                                        value="FINALIZAR"
+                                        styleClass="red-btn"
+                                        class="ui-button ui-widget 
+                                        ui-state-default ui-corner-all 
+                                        ui-button-text-only"
+                                        outcome="/queja"
+                                        style="width: 100%;"
+                                        >
+                                    </p:button>
+                                </div>
+                            </section>
+                        </div>
+                        <div class="col-12 md:col-6 overflow-hidden">
+                            <p:graphicImage name="images/diaco_fin.jpg" library="sapphire-layout" alt="Image"
+                                            styleClass="md:ml-auto block md:h-full"
+                                            style="clip-path: polygon(8% 0, 100% 0%, 100% 100%, 0 100%)"/>
+                        </div>
+                    </div>
+                </h:panelGroup>
+            </p:outputPanel>
+
+
+
+        </div>
+
+    </ui:define>
+</ui:composition>

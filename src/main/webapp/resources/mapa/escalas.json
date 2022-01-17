@@ -1,0 +1,18 @@
+{
+  "1": {
+    "nombre": "Occidente",
+    "color": "rgb(38, 138, 190)"
+  },
+  "2": {
+    "nombre": "Central",
+    "color": "rgb(198, 197, 196)"
+  },
+  "3": {
+    "nombre": "Sur",
+    "color": "#42515a"
+  },
+  "4": {
+    "nombre": "Oriente",
+    "color": "#517598"
+  }
+}

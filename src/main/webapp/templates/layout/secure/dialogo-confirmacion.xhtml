@@ -1,0 +1,17 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+
+    <!-- Dialogo de confirmacion -->
+    <p:confirmDialog id="dlgConfirmacion" 
+                     header="#{lmsgs['beneficiarios.web.panel.confirmacion.encabezado']}" 
+                     global="true" showEffect="fade" hideEffect="fade" >
+        <p:commandButton value="#{lmsgs['beneficiarios.web.panel.confirmacion.no']}" 
+                         type="button" styleClass="ui-confirmdialog-no red-btn" 
+                         icon="ui-icon-close fa fa-close" />
+        <p:commandButton value="#{lmsgs['beneficiarios.web.panel.confirmacion.si']}" 
+                         type="button" styleClass="ui-confirmdialog-yes green-btn" 
+                         icon="ui-icon-check fa fa-check" />
+    </p:confirmDialog>
+</ui:composition>
